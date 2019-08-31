@@ -1,1 +1,1 @@
-git remote add origin git@github.com:rmfkxhxh/Multicampus_KNM.git
+https://www.kaggle.com/c/youtube8m-2019
