@@ -1,1 +1,1 @@
-memo
+git remote add origin git@github.com:rmfkxhxh/Multicampus_KNM.git
