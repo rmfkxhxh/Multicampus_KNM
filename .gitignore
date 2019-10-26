@@ -2,3 +2,4 @@ min/__pycache__/model.cpython-36.pyc
 min/__pycache__/dataset.cpython-36.pyc
 min/__pycache__/base_model.cpython-36.pyc
 min/__pycache__/config.cpython-36.pyc
+min/train/data.npy
