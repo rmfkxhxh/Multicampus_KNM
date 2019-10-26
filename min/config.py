@@ -52,7 +52,7 @@ class Config(object):
 
         # about the training
         self.train_image_dir = './train/images/'
-        self.train_caption_file = './captions_train2014.json'
+        self.train_caption_file = './train/captions_train2014.json'
         self.temp_annotation_file = './train/anns.csv'
         self.temp_data_file = './train/data.npy'
 
