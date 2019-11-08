@@ -6,8 +6,8 @@ import heapq
 class ImageLoader(object):
     def __init__(self, mean_file):
         self.bgr = True
-        self.scale_shape = np.array([224, 224], np.int32)
-        self.crop_shape = np.array([224, 224], np.int32)
+        self.scale_shape = np.array([32, 32], np.int32)  #224->32 resize
+        self.crop_shape = np.array([32, 32], np.int32)   #224->32 resize
         self.mean = np.load(mean_file).mean(1).mean(1)
 
     def load_image(self, image_file):

@@ -52,10 +52,10 @@ class CaptionGenerator(BaseModel):
         conv5_3_feats = self.nn.conv2d(conv5_2_feats, 512, name = 'conv5_3')
 
         reshaped_conv5_3_feats = tf.reshape(conv5_3_feats,
-                                            [config.batch_size, 196, 512])
+                                            [config.batch_size, 4, 512])  #196 ->4
 
         self.conv_feats = reshaped_conv5_3_feats
-        self.num_ctx = 196
+        self.num_ctx = 4  #196 ->4
         self.dim_ctx = 512
         self.images = images
 
@@ -101,10 +101,10 @@ class CaptionGenerator(BaseModel):
         res5c_feats = self.resnet_block2(res5b_feats, 'res5c', 'bn5c', 512)
 
         reshaped_res5c_feats = tf.reshape(res5c_feats,
-                                         [config.batch_size, 49, 2048])
+                                         [config.batch_size, 1, 2048])  #49->1
 
         self.conv_feats = reshaped_res5c_feats
-        self.num_ctx = 49
+        self.num_ctx = 1  #49->1
         self.dim_ctx = 2048
         self.images = images
 
