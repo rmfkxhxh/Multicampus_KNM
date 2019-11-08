@@ -416,14 +416,12 @@ class CaptionGenerator(BaseModel):
             # use 2 fc layers to attend
             temp1 = self.nn.dense(reshaped_contexts,
                                   units = config.dim_attend_layer,
-                                  activation = tf.tanh,
+                                  activation = None,
                                   name = 'fc_1a')
             temp2 = self.nn.dense(output,
                                   units = config.dim_attend_layer,
-                                  activation = tf.tanh,
+                                  activation = None,
                                   name = 'fc_1b')
-            # temp2 = tf.tile(tf.expand_dims(temp2, 1), [1, self.num_ctx, 1])
-            # temp2 = tf.reshape(temp2, [-1, config.dim_attend_layer])
             temp2 = tf.transpose(temp2)
             temp = tf.tensordot(temp1, temp2, 1)
             temp = self.nn.dropout(temp)
