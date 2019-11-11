@@ -395,45 +395,37 @@ class CaptionGenerator(BaseModel):
     def attend(self, contexts, output):
         """ Attention Mechanism. """
         config = self.config
-        reshaped_contexts = tf.reshape(contexts, [-1, self.dim_ctx])
-        reshaped_contexts = self.nn.dropout(reshaped_contexts)
-        output = self.nn.dropout(output)
-        if config.num_attend_layers == 1:
-            # use 1 fc layer to attend
-            logits1 = self.nn.dense(reshaped_contexts,
-                                    units = 1,
-                                    activation = None,
-                                    use_bias = False,
-                                    name = 'fc_a')
-            logits1 = tf.reshape(logits1, [-1, self.num_ctx])
-            logits2 = self.nn.dense(output,
-                                    units = self.num_ctx,
-                                    activation = None,
-                                    use_bias = False,
-                                    name = 'fc_b')
-            logits = logits1 + logits2
-        else:
-            # use 2 fc layers to attend
-            temp1 = self.nn.dense(reshaped_contexts,
-                                  units = config.dim_attend_layer,
-                                  activation = tf.tanh,
-                                  name = 'fc_1a')
-            temp2 = self.nn.dense(output,
-                                  units = config.dim_attend_layer,
-                                  activation = tf.tanh,
-                                  name = 'fc_1b')
-            # temp2 = tf.tile(tf.expand_dims(temp2, 1), [1, self.num_ctx, 1])
-            # temp2 = tf.reshape(temp2, [-1, config.dim_attend_layer])
-            temp2 = tf.transpose(temp2)
-            temp = tf.tensordot(temp1, temp2, 1)
-            temp = self.nn.dropout(temp)
-            logits = self.nn.dense(temp,
-                                   units = 1,
-                                   activation = None,
-                                   use_bias = False,
-                                   name = 'fc_2')
-            logits = tf.reshape(logits, [-1, self.num_ctx])
-        alpha = tf.nn.softmax(logits)
+        reshaped_contexts = tf.reshape(contexts, [-1, self.dim_ctx])  # contexts shape=(32,196,512), dim_ctx=512
+        reshaped_contexts = self.nn.dropout(reshaped_contexts)  # reshaped_contexts shape=(6272,512)
+        output = self.nn.dropout(output)  # output shape=(32,512)
+
+        # tanh , + switch
+        temp1 = self.nn.dense(reshaped_contexts,  # reshaped_contexts shape=(6272,512)
+                              units=config.dim_attend_layer,  # dim_attend_layer = 512
+                              activation=None,
+                              name='fc_1a')  # temp1 shape=(6272,512)
+        temp2 = self.nn.dense(output,  # output shape=(32,512)
+                              units=config.dim_attend_layer,  # dim_attend_layer = 512
+                              activation=None,
+                              name='fc_1b')  # temp1 shape=(32,512)
+
+        temp2 = tf.tile(tf.expand_dims(temp2, 1), [1, self.num_ctx, 1])  # num_ctx =196, temp2 shape=(32,196,512)
+        temp2 = tf.reshape(temp2, [-1, config.dim_attend_layer])  # temp2 shape=(6272,512)
+        temp = temp1 + temp2  # temp shape=(6272,512)
+        temp = self.nn.dropout(temp)
+
+        temp = self.nn.dense(temp,
+                             units=config.dim_attend_layer,  # dim_attend_layer = 512
+                             activation=tf.tanh,
+                             use_bias=False,
+                             name='fc_1_ab')  # temp shape=(6272,512)
+        logits = self.nn.dense(temp,
+                               units=1,
+                               activation=None,
+                               use_bias=False,
+                               name='fc_2')  # logits shape=(6272,1)
+        logits = tf.reshape(logits, [-1, self.num_ctx])  # logits =196, logits shape=(32,196)
+        alpha = tf.nn.softmax(logits)  # alpha shape=(32,196)
         return alpha
 
     def decode(self, expanded_output):
